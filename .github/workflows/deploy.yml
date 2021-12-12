@@ -1,0 +1,50 @@
+name: deploy
+
+# yarn upgrade
+# Upgrade yarn.lock
+# cf. yarn upgrade --latest
+#
+# bundle update
+# Upgrade Gemfile.lock
+
+on:
+  push:
+    branches:
+      - master
+  # schedule:
+  #   - cron: 0 12 * * 1 # At 12:00 on Monday.
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - name: Please tell me who you are.
+        run: |
+          git config --global user.email "15198247+buyoh@users.noreply.github.com"
+          git config --global user.name "buyoh (github workflow)"
+      - name: unshallow
+        run: |
+          git fetch --unshallow ||:
+      - name: generate by codeLib2-htmldoc
+        run: |
+          yarn install
+          yarn build
+          cp -r public/* docs/*
+      - uses: actions/checkout@v2
+        with:
+          ref: docs
+      - name: commit phase
+        run: |
+          git merge origin/master -m "Merge branch 'master' into doc-codeLib2 by Github Actions" ||:
+          git add docs/*
+          git commit -m 'deploy by Github Actions' ||:
+      - name: push
+        run: |
+          git push
