@@ -32,17 +32,19 @@ jobs:
       - name: unshallow
         run: |
           git fetch --unshallow ||:
-      - name: generate by codeLib2-htmldoc
+      - name: generate
         run: |
           yarn install
           yarn build
-          cp -r public/* docs/*
+          mkdir -p /tmp/docs
+          cp -r public/* /tmp/docs/
       - uses: actions/checkout@v2
         with:
           ref: docs
       - name: commit phase
         run: |
           git merge origin/master -m "Merge branch 'master' into doc-codeLib2 by Github Actions" ||:
+          cp -r /tmp/docs .
           git add docs/*
           git commit -m 'deploy by Github Actions' ||:
       - name: push
