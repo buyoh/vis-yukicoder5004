@@ -1,0 +1,17 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#page {
+  margin-left: auto;
+  margin-right: auto;
+  width: 960px;
+  margin-bottom: 90vh;
+  overflow: hidden;
+}
+
+// #main {
+// }
+
+@import "./base.scss";
