@@ -86,12 +86,13 @@ function renderKadomatsu(props: Props): (JSX.Element | null)[] {
     [players[0], players[1]] = [players[1], players[0]];
     [players[n - 2], players[n - 1]] = [players[n - 1], players[n - 2]];
   }
+  for (const p of players) console.log(p.skill);
   return players.map((p, i) => (
     <XRect
       x={props.x + (i * props.width) / 4}
-      y={props.y + (p.skill / 100) * props.height}
+      y={props.y + (1 - p.skill / 100) * props.height}
       width={props.width / 4}
-      height={props.height - (p.skill / 100) * props.height}
+      height={(p.skill / 100) * props.height}
       key={p.id}
     />
   ));
