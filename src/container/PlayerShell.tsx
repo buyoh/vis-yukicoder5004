@@ -120,14 +120,14 @@ class PlayerShell extends React.Component<CombinedProps, State> {
       if (input instanceof Error) {
         // TODO: integrate log
         console.warn(input);
-        this.props.setAlert(input.message);
+        this.props.setAlert('[input] ' + input.message);
         this.setState({ ...this.state, loading: false });
         return;
       }
       const output = parseGameOutputParser(this.state.stdoutRaw, input);
       if (output instanceof Error) {
         console.warn(output);
-        this.props.setAlert(output.message);
+        this.props.setAlert('[output] ' + output.message);
         this.setState({ ...this.state, loading: false });
         return;
       }
@@ -135,7 +135,7 @@ class PlayerShell extends React.Component<CombinedProps, State> {
       const gssErr = gss.build();
       if (gssErr) {
         console.warn(gssErr);
-        this.props.setAlert(gssErr.message);
+        this.props.setAlert('[game] ' + gssErr.message);
         this.setState({ ...this.state, loading: false });
         return;
       }
