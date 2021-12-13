@@ -43,6 +43,7 @@ type State = {
 type StateProps = {
   gameStateStore: GameStateStore | null;
   gameState: GameState | null;
+  score: number;
   currentTick: number;
   skillViewType: SkillViewMode;
   fillColorType: FillColorType;
@@ -63,9 +64,11 @@ type CombinedProps = Props & StateProps & DispatchProps;
 
 function mapStateToProps(state: RootState): StateProps {
   const currentTick = state.player.currentTick;
+  const gameState = state.player.game?.get(currentTick) || null;
   return {
     gameStateStore: state.player.game,
-    gameState: state.player.game?.get(currentTick) || null,
+    gameState,
+    score: gameState?.getScore() || 0,
     currentTick,
     skillViewType: state.player.config.skillViewMode,
     fillColorType: state.player.config.fillColorType,
@@ -161,6 +164,11 @@ class PlayerShell extends React.Component<CombinedProps, State> {
   private renderPanel() {
     return (
       <>
+        <Group>
+          <div className="margin">
+            <b>score : {this.props.score}</b>
+          </div>
+        </Group>
         <Group>
           <div className="row">
             <div className="flex cols margin" style={{ overflow: 'hidden' }}>

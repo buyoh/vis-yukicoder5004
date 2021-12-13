@@ -36,18 +36,30 @@ export class GameState {
   private tick: number;
   private rooms: { [i: number]: InternalRoom };
   private players: Player[];
+  private score: number;
   constructor() {
     this.tick = 0;
     this.rooms = {};
     this.players = [];
+    this.score = 0;
+  }
+
+  private convertInternalRoomToRoom(id: number, room: InternalRoom): Room {
+    return {
+      id,
+      players: room.players.map((p) => this.players[p]),
+      penalty: room.penalty,
+    };
   }
 
   getRooms(): Room[] {
-    return Object.entries(this.rooms).map((room) => ({
-      id: +room[0],
-      players: room[1].players.map((p) => this.players[p]),
-      penalty: room[1].penalty,
-    }));
+    return Object.entries(this.rooms).map((room) =>
+      this.convertInternalRoomToRoom(+room[0], room[1])
+    );
+  }
+
+  getScore(): number {
+    return this.score;
   }
 
   clone(): GameState {
@@ -60,6 +72,7 @@ export class GameState {
       ])
     );
     a.players = clonePlayer(this.players);
+    a.score = this.score;
 
     return a;
   }
@@ -87,8 +100,9 @@ export class GameState {
     for (const action of actions.unite) {
       if (action.length !== 2)
         return new RangeError('internal error: action.length != 2'); // never
-      const err = this.unite(action[0], action[1]);
-      if (err) return err;
+      const sd = this.unite(action[0], action[1]);
+      if (sd instanceof Error) return sd;
+      this.score += sd;
     }
 
     this.tick += 1;
@@ -103,7 +117,7 @@ export class GameState {
     return a;
   }
 
-  private unite(pid1: number, pid2: number): null | Error {
+  private unite(pid1: number, pid2: number): number | Error {
     const p1 = this.players[pid1];
     const p2 = this.players[pid2];
     if (!p1 || !p2 || pid1 === pid2)
@@ -111,10 +125,14 @@ export class GameState {
     const riDst = p1.roomId;
     const riSrc = p2.roomId;
     // It's valid and we do nothing
-    if (riDst == riSrc) return null;
+    if (riDst == riSrc) return 0;
     const rDst = this.rooms[riDst];
     const rSrc = this.rooms[riSrc];
     // if (rDst.length < rSrc.length) this.unite(pid2, pid1);
+
+    let scoreDiff = 0;
+    scoreDiff -= calcRoomScore(this.convertInternalRoomToRoom(0, rDst));
+    scoreDiff -= calcRoomScore(this.convertInternalRoomToRoom(0, rSrc));
 
     rDst.penalty += rSrc.penalty;
     rDst.penalty += 2 * this.tick * rDst.players.length * rSrc.players.length;
@@ -128,7 +146,8 @@ export class GameState {
       this.players[pid].roomId = riDst;
     }
     delete this.rooms[riSrc];
+    scoreDiff += calcRoomScore(this.convertInternalRoomToRoom(0, rDst));
 
-    return null;
+    return scoreDiff;
   }
 }
