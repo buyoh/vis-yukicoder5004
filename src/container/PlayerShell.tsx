@@ -21,12 +21,12 @@ import {
   SkillViewMode,
 } from '../stores/player/types';
 
-import * as Case00 from '../lib/game/case00.json';
-const kStdin = (Case00 as any).i;
-const kStdout = (Case00 as any).o;
-// import * as Case01 from '../lib/game/case01.json';
-// const kStdin = (Case01 as any).i;
-// const kStdout = (Case01 as any).o;
+// import * as Case00 from '../lib/game/case00.json';
+// const kStdin = (Case00 as any).i;
+// const kStdout = (Case00 as any).o;
+import * as Case01 from '../lib/game/case01.json';
+const kStdin = (Case01 as any).i;
+const kStdout = (Case01 as any).o;
 
 //
 
