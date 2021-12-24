@@ -130,6 +130,13 @@ export class GameState {
     const rSrc = this.rooms[riSrc];
     // if (rDst.length < rSrc.length) this.unite(pid2, pid1);
 
+    if (rDst.players.length + rSrc.players.length > 4)
+      return new Error(
+        `invalid room: p1 = ${pid1 + 1} p1room = ${rDst.players.map(
+          (i) => i + 1
+        )}, p2 = ${pid2 + 1} p2room = ${rSrc.players.map((i) => i + 1)}`
+      );
+
     let scoreDiff = 0;
     scoreDiff -= calcRoomScore(this.convertInternalRoomToRoom(0, rDst));
     scoreDiff -= calcRoomScore(this.convertInternalRoomToRoom(0, rSrc));
